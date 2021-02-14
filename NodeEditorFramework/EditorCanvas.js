@@ -14,6 +14,8 @@ export default class EditorCanvas {
         this.grid = new Grid(style);
 
         this.scaleFactor = 1;
+        this.scaleMaxLimit = 0.5;
+        this.scaleMinLimit = 2;
 
         this.setupInput();
     }
@@ -21,10 +23,10 @@ export default class EditorCanvas {
     setupInput() {
         this.canvas.addEventListener("wheel", (event) => {
             if (event.deltaY > 0) { //Scroll down on wheel
-
+                
             }
             else {
-                
+
             }
         });
     }

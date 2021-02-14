@@ -16,6 +16,8 @@ export default class NodeEditor {
         this.editorCanvas = new EditorCanvas(this.rootDiv, this.style);
         this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style);
         this.propertiesPanel = new PropertiesPanel(this.rootDiv, this.style);
+
+        this.editorCanvas.redraw();
     }
 
     createRootDisplay() {
