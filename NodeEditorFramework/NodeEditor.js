@@ -21,8 +21,8 @@ export default class NodeEditor {
     createRootDisplay() {
         this.rootDiv = document.createElement("div");
         if (this.width != undefined && this.height != undefined) {
-            this.rootDiv.style.width = this.width;
-            this.rootDiv.style.height = this.height;
+            this.rootDiv.style.width = this.width + "px";
+            this.rootDiv.style.height = this.height + "px";
         }
         else if (this.width == undefined && this.height == undefined) {
             this.rootDiv.style.margin = "auto";
@@ -33,6 +33,7 @@ export default class NodeEditor {
         }
         this.rootDiv.style.backgroundColor = this.style.backgroundColor;
         this.rootDiv.style.display = "flex";
+        this.rootDiv.style.overflow = "hidden";
     }
 
     getDisplay() {
