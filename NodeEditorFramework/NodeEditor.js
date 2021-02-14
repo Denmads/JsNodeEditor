@@ -13,8 +13,8 @@ export default class NodeEditor {
     }
 
     initialize() {
-        this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style);
         this.editorCanvas = new EditorCanvas(this.rootDiv, this.style);
+        this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style);
         this.propertiesPanel = new PropertiesPanel(this.rootDiv, this.style);
     }
 
@@ -33,6 +33,7 @@ export default class NodeEditor {
         }
         this.rootDiv.style.backgroundColor = this.style.backgroundColor;
         this.rootDiv.style.display = "flex";
+        this.rootDiv.style.justifyContent = "space-between";
         this.rootDiv.style.overflow = "hidden";
     }
 

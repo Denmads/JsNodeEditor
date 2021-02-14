@@ -14,6 +14,7 @@ export default class PropertiesPanel {
         this.panel.appendChild(this.title);
 
         this.hideWidth = Math.floor(this.panel.clientWidth * this.hidePercentage);
+        this.hide();
     }
 
     createTitle (style) {
