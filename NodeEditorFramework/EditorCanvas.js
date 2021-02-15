@@ -1,4 +1,5 @@
 import Grid from "./Elements/Grid.js";
+import MouseZoomer from "./MouseZoomer.js";
 
 export default class EditorCanvas {
     constructor(parent, style) {
@@ -12,32 +13,31 @@ export default class EditorCanvas {
         this.context.imageSmoothingEnabled = false;
 
         this.grid = new Grid(style);
-
-        this.scaleFactor = 1;
-        this.scaleMaxLimit = 0.5;
-        this.scaleMinLimit = 2;
+        this.mouseZoomer = new MouseZoomer(this);
 
         this.setupInput();
     }
 
     setupInput() {
-        this.canvas.addEventListener("wheel", (event) => {
-            if (event.deltaY > 0) { //Scroll down on wheel
-                
-            }
-            else {
-
-            }
-        });
+        this.canvas.addEventListener("wheel", this.onMouseScroll.bind(this), {passive: false});
+        this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
+        this.canvas.addEventListener("mousedown", this.onMouseMove.bind(this));
+        this.canvas.addEventListener("mouseup", this.onMouseMove.bind(this));
+        this.canvas.addEventListener("mouseout", this.onMouseMove.bind(this));
     }
 
-    scale(newScale) {
-        this.scaleFactor = 1/newScale;
-        this.context.scale(newScale, newScale);
+    onMouseMove (event) {
+        this.mouseZoomer.onMouseMove(event);
+        this.redraw();
+    }
+
+    onMouseScroll (event) {
+        this.mouseZoomer.onMouseScroll(event);
+        this.redraw();
     }
 
     redraw() {
-        this.context.clearRect(0, 0, this.canvas.width * this.scaleFactor, this.canvas.height * this.scaleFactor);
-        this.grid.draw(this.context, this.scaleFactor);
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.grid.draw(this, this.mouseZoomer);
     }
 }

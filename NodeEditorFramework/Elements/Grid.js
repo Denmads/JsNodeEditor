@@ -1,44 +1,46 @@
 export default class Grid {
     constructor (style) {
         this.style = style;
-        this.offset = {
-            x: 0,
-            y: 0
-        }
     }
 
-    draw(context, scale) {
-        context.strokeStyle = this.style.gridColor;
+    draw(editorCanvas, zoomer) {
+        console.log(zoomer.worldOrigin);
+        editorCanvas.context.strokeStyle = this.style.gridColor;
 
-        let w = context.canvas.width * scale;
-        let h = context.canvas.height * scale;
+        let w = zoomer.zoomedInv(editorCanvas.canvas.width);
+        let h = zoomer.zoomedInv(editorCanvas.canvas.height);
 
-        
-        for (let y = this.offset.y; y < h; y += this.style.minorGridSize) {
+        let majorMinorFactor = this.style.majorGridSize / this.style.minorGridSize;
+
+        let gridCount = 1
+        for (let y = zoomer.worldToScreenY(zoomer.worldOrigin.y); y < h; y += zoomer.zoomed(this.style.minorGridSize)) {
             
-            if ((y - this.offset.y) % this.style.majorGridSize == 0 ) {
-                context.lineWidth = this.style.majorGridThickness;
+            if (gridCount % majorMinorFactor == 0 ) {
+                editorCanvas.context.lineWidth = this.style.majorGridThickness;
             }
             else {
-                context.lineWidth = this.style.minorGridThickness;
+                editorCanvas.context.lineWidth = this.style.minorGridThickness;
             }
-            context.beginPath();
-            context.moveTo(0, y);
-            context.lineTo(w, y);
-            context.stroke();
+            editorCanvas.context.beginPath();
+            editorCanvas.context.moveTo(0, Math.floor(y));
+            editorCanvas.context.lineTo(w, Math.floor(y));
+            editorCanvas.context.stroke();
+            gridCount++;
         }
 
-        for (let x = this.offset.x; x < w; x += this.style.minorGridSize) {
-            if ((x - this.offset.x) % this.style.majorGridSize == 0 ) {
-                context.lineWidth = this.style.majorGridThickness;
+        gridCount = 1;
+        for (let x = zoomer.worldToScreenX(zoomer.worldOrigin.x); x < w; x += zoomer.zoomed(this.style.minorGridSize)) {
+            if (gridCount % majorMinorFactor == 0 ) {
+                editorCanvas.context.lineWidth = this.style.majorGridThickness;
             }
             else {
-                context.lineWidth = this.style.minorGridThickness;
+                editorCanvas.context.lineWidth = this.style.minorGridThickness;
             }
-            context.beginPath();
-            context.moveTo(x, 0);
-            context.lineTo(x, h);
-            context.stroke();
+            editorCanvas.context.beginPath();
+            editorCanvas.context.moveTo(Math.floor(x), 0);
+            editorCanvas.context.lineTo(Math.floor(x), h);
+            editorCanvas.context.stroke();
+            gridCount++;
         }
         
     }

@@ -9,7 +9,7 @@ export default class EditorStyle {
         this.gridColor = "#333333";
         this.majorGridSize = 100; //Must be multiple of minor size
         this.minorGridSize = 20;
-        this.majorGridThickness = 2;
+        this.majorGridThickness = 3;
         this.minorGridThickness = 1;
     }
 }
