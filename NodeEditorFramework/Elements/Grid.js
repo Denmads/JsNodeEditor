@@ -7,13 +7,18 @@ export default class Grid {
         console.log(zoomer.worldOrigin);
         editorCanvas.context.strokeStyle = this.style.gridColor;
 
-        let w = zoomer.zoomedInv(editorCanvas.canvas.width);
-        let h = zoomer.zoomedInv(editorCanvas.canvas.height);
+        let w = editorCanvas.canvas.width;
+        let h = editorCanvas.canvas.height;
 
         let majorMinorFactor = this.style.majorGridSize / this.style.minorGridSize;
 
+        let zoomedMajorGridSize = zoomer.zoomed(this.style.majorGridSize)
+
+        let majorGridOffsetX = zoomer.worldOrigin.x % zoomedMajorGridSize;
+        let majorGridOffsetY = zoomer.worldOrigin.y % zoomedMajorGridSize;
+
         let gridCount = 1
-        for (let y = zoomer.worldToScreenY(zoomer.worldOrigin.y); y < h; y += zoomer.zoomed(this.style.minorGridSize)) {
+        for (let y = -zoomedMajorGridSize + majorGridOffsetY; y < h; y += zoomer.zoomed(this.style.minorGridSize)) {
             
             if (gridCount % majorMinorFactor == 0 ) {
                 editorCanvas.context.lineWidth = this.style.majorGridThickness;
@@ -29,7 +34,7 @@ export default class Grid {
         }
 
         gridCount = 1;
-        for (let x = zoomer.worldToScreenX(zoomer.worldOrigin.x); x < w; x += zoomer.zoomed(this.style.minorGridSize)) {
+        for (let x = -zoomedMajorGridSize + majorGridOffsetX; x < w; x += zoomer.zoomed(this.style.minorGridSize)) {
             if (gridCount % majorMinorFactor == 0 ) {
                 editorCanvas.context.lineWidth = this.style.majorGridThickness;
             }

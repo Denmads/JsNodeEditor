@@ -37,6 +37,10 @@ export default class MouseZoomer {
             this.scale = Math.max(this.minScaleLimit, this.scale * (1 / this.scaleStep));
         }
 
+        if (this.scale == this.maxScaleLimit || this.scale == this.minScaleLimit) {
+            return;
+        }
+
         this.worldOrigin.x = this.mouse.worldPosition.x;
         this.worldOrigin.y = this.mouse.worldPosition.y;
         this.mouse.screenPosition.x = this.mouse.live.x;
