@@ -4,7 +4,6 @@ export default class Grid {
     }
 
     draw(editorCanvas, zoomer) {
-        console.log(zoomer.worldOrigin);
         editorCanvas.context.strokeStyle = this.style.gridColor;
 
         let w = editorCanvas.canvas.width;
@@ -14,8 +13,8 @@ export default class Grid {
 
         let zoomedMajorGridSize = zoomer.zoomed(this.style.majorGridSize)
 
-        let majorGridOffsetX = zoomer.worldOrigin.x % zoomedMajorGridSize;
-        let majorGridOffsetY = zoomer.worldOrigin.y % zoomedMajorGridSize;
+        let majorGridOffsetX = -zoomer.worldOrigin.x % zoomedMajorGridSize;
+        let majorGridOffsetY = -zoomer.worldOrigin.y % zoomedMajorGridSize;
 
         let gridCount = 1
         for (let y = -zoomedMajorGridSize + majorGridOffsetY; y < h; y += zoomer.zoomed(this.style.minorGridSize)) {

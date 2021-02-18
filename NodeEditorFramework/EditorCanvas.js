@@ -1,4 +1,6 @@
 import Grid from "./Elements/Grid.js";
+import Node from "./Elements/Node.js";
+import Socket, { SocketType, SocketValueType } from "./Elements/Socket.js";
 import MouseZoomer from "./MouseZoomer.js";
 
 export default class EditorCanvas {
@@ -14,6 +16,16 @@ export default class EditorCanvas {
 
         this.grid = new Grid(style);
         this.mouseZoomer = new MouseZoomer(this);
+        this.mouseZoomer.worldOrigin.x = -this.canvas.width/2;
+        this.mouseZoomer.worldOrigin.y = -this.canvas.height/2;
+
+        this.sck = new Node();
+        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
+        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
+        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
+        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
+        this.sck.sockets.outputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
+        this.sck.sockets.outputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
 
         this.setupInput();
     }
@@ -39,5 +51,7 @@ export default class EditorCanvas {
     redraw() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.grid.draw(this, this.mouseZoomer);
+
+        this.sck.draw(this.context, this.mouseZoomer, 0, 0);   
     }
 }

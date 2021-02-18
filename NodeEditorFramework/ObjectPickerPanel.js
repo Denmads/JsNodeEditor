@@ -1,12 +1,12 @@
 export default class ObjectPickerPanel {
-    constructor(parent, style) {
+    constructor(parent, style, nodeDatabase) {
         this.panelWidth = "20%";
         this.hidePercentage = 0.9;
         this.hideTime = 300;
 
         this.hidden = false;
         
-
+        this.nodeDatabase = nodeDatabase;
 
         this.panel = document.createElement("div");
         this.panel.style.height = "100%";

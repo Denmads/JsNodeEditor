@@ -2,19 +2,22 @@ import EditorStyle from "./EditorStyle.js";
 import ObjectPickerPanel from "./ObjectPickerPanel.js";
 import EditorCanvas from "./EditorCanvas.js";
 import PropertiesPanel from "./PropertiesPanel.js";
+import NodeDatabase from "./NodeDatabase.js";
 
 export default class NodeEditor {
-    constructor(width=undefined, height=undefined) {
+    constructor(nodeDatabase, width=undefined, height=undefined) {
         this.style = new EditorStyle();
         this.width = width;
         this.height = height;
+
+        this.nodeDatabase = nodeDatabase;
         
         this.createRootDisplay();
     }
 
     initialize() {
         this.editorCanvas = new EditorCanvas(this.rootDiv, this.style);
-        this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style);
+        this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style, this.nodeDatabase);
         this.propertiesPanel = new PropertiesPanel(this.rootDiv, this.style);
 
         this.editorCanvas.redraw();
