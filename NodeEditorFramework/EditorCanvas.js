@@ -20,12 +20,14 @@ export default class EditorCanvas {
         this.mouseZoomer.worldOrigin.y = -this.canvas.height/2;
 
         this.sck = new Node();
-        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
-        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
-        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
-        this.sck.sockets.inputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
-        this.sck.sockets.outputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
-        this.sck.sockets.outputs.push(new Socket(SocketType.INPUT, SocketValueType.NUMBER));
+        this.sck.addInputSocket("1", SocketValueType.NUMBER);
+        this.sck.addInputSocket("2", SocketValueType.NUMBER);
+        this.sck.addInputSocket("3", SocketValueType.BOOLEAN);
+        this.sck.addInputSocket("4", SocketValueType.NUMBER);
+        this.sck.addInputSocket("5", SocketValueType.NUMBER);
+        this.sck.addInputSocket("6", SocketValueType.NUMBER);
+
+        this.sck.calculate();
 
         this.setupInput();
     }

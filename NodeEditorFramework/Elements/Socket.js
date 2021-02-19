@@ -16,16 +16,14 @@ export default class Socket {
     constructor(type, valueType) {
         this.type = type;
         this.valueType = valueType;
-        this.value = undefined
-        this.color = "#bb3333";
+        this.value = undefined;
         
 
         this.wire = undefined;
     }
 
     draw(context, zoomer, x, y) {
-        console.log(x + " | " + y);
-        context.fillStyle = this.color
+        context.fillStyle = this.valueType.color;
         context.strokeStyle = "#000000"
         context.lineWidth = zoomer.zoomed(1.5);
 

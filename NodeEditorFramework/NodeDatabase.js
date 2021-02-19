@@ -16,6 +16,6 @@ export default class NodeDatabase {
     }
 
     getCategories() {
-        return Object.keys(this.categories);
+        return Object.keys(this.nodes);
     }
 }

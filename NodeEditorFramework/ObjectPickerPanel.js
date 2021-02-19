@@ -1,3 +1,5 @@
+import generateObjectFolder from "./ObjectFolderGenerator.js";
+
 export default class ObjectPickerPanel {
     constructor(parent, style, nodeDatabase) {
         this.panelWidth = "20%";
@@ -13,18 +15,29 @@ export default class ObjectPickerPanel {
         this.panel.style.width = this.panelWidth;
         this.panel.style.backgroundColor = style.panelBackgroundColor;
         this.panel.style.position = "relative";
+        this.panel.style.padding = "10px";
+        this.panel.style.display = "block ruby";
+        this.contentPane = document.createElement("div");
+        this.contentPane.style.height = "97%";
+        this.contentPane.style.width = "100%";
+        this.contentPane.style.overflowY = "auto";
+        this.panel.appendChild(this.contentPane);
         parent.appendChild(this.panel);
 
         this.toggle = this.createToggleButton(style);
-        this.panel.appendChild(this.toggle);
+        this.panel.insertBefore(this.toggle, this.panel.children[0]);
 
         this.hideWidth = Math.floor(this.panel.clientWidth * this.hidePercentage);
+
+        this.nodeDatabase.getCategories().forEach((category) => {
+            generateObjectFolder(this.contentPane, category, this.nodeDatabase.getAllNodesInCategory(category));
+        });
     }
 
     createToggleButton (style) {
         let toggle = document.createElement("div");
         toggle.style.cursor = "pointer";
-        toggle.innerText = "Object Picker";
+        toggle.innerText = "Node Picker";
         toggle.style.backgroundColor = style.panelSecondaryBackgroundColor;
         toggle.style.padding = "10px";
         toggle.style.borderRadius = "20px";
@@ -35,6 +48,8 @@ export default class ObjectPickerPanel {
         toggle.style.fontWeight = "bold";
         toggle.style.fontFamily = "Arial";
         toggle.style.userSelect = "none";
+        toggle.style.marginRight = "-10px";
+        toggle.style.marginTop = "-10px";
 
         toggle.addEventListener("click", (() => {
             if (this.hidden) {

@@ -1,9 +1,9 @@
-import Node from "../../NodeEditorFramework/Elements/Node";
-import { SocketValueType } from "../../NodeEditorFramework/Elements/Socket";
+import Node from "../../NodeEditorFramework/Elements/Node.js";
+import { SocketValueType } from "../../NodeEditorFramework/Elements/Socket.js";
 
 export default class OrNode extends Node{ 
-    constructor() {
-        super()
+    constructor(x, y) {
+        super("Or", x, y);
 
         this.addInputSocket("in1", SocketValueType.BOOLEAN);
         this.addInputSocket("in2", SocketValueType.BOOLEAN);

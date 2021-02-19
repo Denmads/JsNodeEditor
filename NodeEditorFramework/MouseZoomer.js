@@ -35,9 +35,6 @@ export default class MouseZoomer {
             this.scale = Math.max(this.minScaleLimit, this.scale * (1 / step));
         }
 
-        if (this.scale == this.maxScaleLimit || this.scale == this.minScaleLimit) {
-            return;
-        }
     }
 
     onMouseMove(event) {
