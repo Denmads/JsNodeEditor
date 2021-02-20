@@ -3,12 +3,6 @@ export const SocketType = {
     OUTPUT: "OUT"
 }
 
-export const SocketValueType = {
-    STRING: {id: "string", color: "#32a852"},
-    NUMBER: {id: "number", color: "#3290a8"},
-    BOOLEAN: {id: "bool", color: "#a85b32"}
-}
-
 export default class Socket {
 
     static size = 5;

@@ -1,9 +1,10 @@
-import Point from "./Point.js";
+import Rect from "./Mathematical/Rect.js";
 import Socket, { SocketType } from "./Socket.js";
 
 export default class Node {
     constructor(name, x, y) {
-        this.position = new Point(x, y);
+        this.boundary = new Rect(x, y);
+        this.internalBoundary = new Rect();
 
         this.sockets = {
             inputs: {},
@@ -29,7 +30,7 @@ export default class Node {
     }
 
     getInput(name) {
-        
+        return this.sockets.inputs[name].value
     }
 
     setOutput(name, value) {
@@ -39,18 +40,25 @@ export default class Node {
     calculate () {
         this.maxSockets = Math.max(Object.keys(this.sockets.inputs).length, Object.keys(this.sockets.outputs).length);
 
-        this.height = this.spaceAroundSockets * 2 + this.maxSockets * Socket.size * 2 + this.spaceAroundSockets * (this.maxSockets-1);
-        this.width = 70;
+        this.calculateSize();
+        this.calculateInternal();
+    }
+
+    calculateSize() {
+        //Overwrite this method to give the node a custom size, width and height of boundary must be set!
+        this.boundary.height = this.spaceAroundSockets * 2 + this.maxSockets * Socket.size * 2 + this.spaceAroundSockets * (this.maxSockets-1);
+        this.boundary.width = 70;
     }
 
     calculateInternal() {
-        this.internalWidth = this.width - Socket.size * 4;
-        this.internalHeight = this.height - Socket.size * 2;
+        this.internalBoundary.width = this.boundary.width - Socket.size * 4;
+        this.internalBoundary.height = this.boundary.height - Socket.size * 2;
+        this.internalBoundary.position.x = this.boundary.position.x + (this.boundary.width - this.internalBoundary.width) / 2;
+        this.internalBoundary.position.y = this.boundary.position.y + (this.boundary.height - this.internalBoundary.height) / 2;
     }
 
     update() {
         //Custom logic goes here
-        return
     }
 
     draw(context, zoomer) {
@@ -61,42 +69,46 @@ export default class Node {
 
         context.beginPath();
 
-        context.moveTo(zoomer.worldToScreenX(this.position.x - this.width/2), zoomer.worldToScreenY(this.position.y - this.height/2 + this.cornerRadius));
-        context.quadraticCurveTo(zoomer.worldToScreenX(this.position.x - this.width/2), zoomer.worldToScreenY(this.position.y - this.height/2), zoomer.worldToScreenX(this.position.x - this.width/2 + this.cornerRadius), zoomer.worldToScreenY(this.position.y - this.height/2));
-        context.lineTo(zoomer.worldToScreenX(this.position.x + this.width/2 - this.cornerRadius), zoomer.worldToScreenY(this.position.y - this.height/2));
-        context.quadraticCurveTo(zoomer.worldToScreenX(this.position.x + this.width/2), zoomer.worldToScreenY(this.position.y - this.height/2), zoomer.worldToScreenX(this.position.x + this.width/2), zoomer.worldToScreenY(this.position.y - this.height/2 + this.cornerRadius));
-        context.lineTo(zoomer.worldToScreenX(this.position.x + this.width/2), zoomer.worldToScreenY(this.position.y + this.height/2 - this.cornerRadius));
-        context.quadraticCurveTo(zoomer.worldToScreenX(this.position.x + this.width/2), zoomer.worldToScreenY(this.position.y + this.height/2), zoomer.worldToScreenX(this.position.x + this.width/2 - this.cornerRadius), zoomer.worldToScreenY(this.position.y + this.height/2));
-        context.lineTo(zoomer.worldToScreenX(this.position.x - this.width/2 + this.cornerRadius), zoomer.worldToScreenY(this.position.y + this.height/2));
-        context.quadraticCurveTo(zoomer.worldToScreenX(this.position.x - this.width/2), zoomer.worldToScreenY(this.position.y + this.height/2), zoomer.worldToScreenX(this.position.x - this.width/2), zoomer.worldToScreenY(this.position.y + this.height/2 - this.cornerRadius));
-        context.lineTo(zoomer.worldToScreenX(this.position.x - this.width/2), zoomer.worldToScreenY(this.position.y - this.height/2 + this.cornerRadius));
+        context.moveTo(zoomer.worldToScreenX(this.boundary.x), zoomer.worldToScreenY(this.boundary.y + this.cornerRadius));
+        context.quadraticCurveTo(zoomer.worldToScreenX(this.boundary.x), zoomer.worldToScreenY(this.boundary.y), zoomer.worldToScreenX(this.boundary.x + this.cornerRadius), zoomer.worldToScreenY(this.boundary.y));
+        context.lineTo(zoomer.worldToScreenX(this.boundary.x + this.width - this.cornerRadius), zoomer.worldToScreenY(this.boundary.y));
+        context.quadraticCurveTo(zoomer.worldToScreenX(this.boundary.x + this.width), zoomer.worldToScreenY(this.boundary.y), zoomer.worldToScreenX(this.boundary.x + this.width), zoomer.worldToScreenY(this.boundary.y + this.cornerRadius));
+        context.lineTo(zoomer.worldToScreenX(this.boundary.x + this.width), zoomer.worldToScreenY(this.boundary.y + this.height - this.cornerRadius));
+        context.quadraticCurveTo(zoomer.worldToScreenX(this.boundary.x + this.width), zoomer.worldToScreenY(this.boundary.y + this.height), zoomer.worldToScreenX(this.boundary.x + this.width - this.cornerRadius), zoomer.worldToScreenY(this.boundary.y + this.height));
+        context.lineTo(zoomer.worldToScreenX(this.boundary.x + this.cornerRadius), zoomer.worldToScreenY(this.boundary.y + this.height));
+        context.quadraticCurveTo(zoomer.worldToScreenX(this.boundary.x), zoomer.worldToScreenY(this.boundary.y + this.height), zoomer.worldToScreenX(this.boundary.x), zoomer.worldToScreenY(this.boundary.y + this.height - this.cornerRadius));
+        context.lineTo(zoomer.worldToScreenX(this.boundary.x), zoomer.worldToScreenY(this.boundary.y + this.cornerRadius));
 
         context.fill();
         context.stroke();
 
         for (let i = 0; i < this.maxSockets; i++) {
-            let ySoc = this.position.y - this.height/2 + this.spaceAroundSockets + Socket.size + (i * (Socket.size * 2 + this.spaceAroundSockets));
+            let ySoc = this.boundary.y + this.spaceAroundSockets + Socket.size + (i * (Socket.size * 2 + this.spaceAroundSockets));
             let inputKeys = Object.keys(this.sockets.inputs);
             if (inputKeys[i] != undefined) {
-                this.sockets.inputs[inputKeys[i]].draw(context, zoomer, this.position.x - this.width/2, ySoc);
+                this.sockets.inputs[inputKeys[i]].draw(context, zoomer, this.boundary.x, ySoc);
             }
             
             let outputKeys = Object.keys(this.sockets.outputs);
             if (outputKeys[i] != undefined) {
-                this.sockets.outputs[outputKeys[i]].draw(context, zoomer, this.position.x + this.width/2, ySoc);
+                this.sockets.outputs[outputKeys[i]].draw(context, zoomer, this.boundary.x + this.width, ySoc);
             }
         }
 
 
-        this.drawInternal(context, zoomer, this.internalWidth, this.internalHeight);
+        this.drawInternal(context, zoomer, this.internalBoundary);
     }
 
-    drawInternal(context, zoomer, width, height) {
+    drawInternal(context, zoomer, internalRect) {
         // Can be overwritten for custom drawing
         context.font = zoomer.zoomed(12) + "px Arial";
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillStyle = "#000000";
-        context.fillText(this.name, zoomer.worldToScreenX(this.position.x), zoomer.worldToScreenY(this.position.y), zoomer.zoomed(width));
+        context.fillText(this.name, zoomer.worldToScreenX(internalRect.position.x), zoomer.worldToScreenY(internalRect.position.y), zoomer.zoomed(internalRect.width));
+    }
+
+    clone() {
+        let cloned = new Node();
     }
 }

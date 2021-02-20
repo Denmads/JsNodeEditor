@@ -1,13 +1,13 @@
 import Node from "../../NodeEditorFramework/Elements/Node.js";
-import { SocketValueType } from "../../NodeEditorFramework/Elements/Socket.js";
+import  ValueType  from "../../NodeEditorFramework/Elements/ValueType.js";
 
 export default class OrNode extends Node{ 
     constructor(x, y) {
         super("Or", x, y);
 
-        this.addInputSocket("in1", SocketValueType.BOOLEAN);
-        this.addInputSocket("in2", SocketValueType.BOOLEAN);
-        this.addOutputSocket("out", SocketValueType.BOOLEAN);
+        this.addInputSocket("in1", ValueType.BOOLEAN);
+        this.addInputSocket("in2", ValueType.BOOLEAN);
+        this.addOutputSocket("out", ValueType.BOOLEAN);
     }
 
     update() {

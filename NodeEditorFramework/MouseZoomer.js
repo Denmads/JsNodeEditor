@@ -24,14 +24,11 @@ export default class MouseZoomer {
 
     onMouseScroll(event) {
         let step = this.scale <= 1 ? this.smallScaleStep : this.largeScaleStep;
-        let dir = 0;
         
         if (event.deltaY < 0) {
-            dir = -1;
             this.scale = Math.min(this.maxScaleLimit, this.scale * step);
         }
         else {
-            dir = 1;
             this.scale = Math.max(this.minScaleLimit, this.scale * (1 / step));
         }
 
@@ -67,18 +64,18 @@ export default class MouseZoomer {
     }
 
     worldToScreenX(x) {
-        return (x * this.scale - this.worldOrigin.x);
+        return x * this.scale - this.worldOrigin.x;
     }
 
     worldToScreenY(y) {
-        return (y * this.scale - this.worldOrigin.y);
+        return y * this.scale - this.worldOrigin.y;
     }
 
     screenToWorldX(x) {
-        return x / this.scale + this.worldOrigin.x;
+        return (x + this.worldOrigin.x) / this.scale;
     }
 
     screenToWorldY(y) {
-        return y / this.scale + this.worldOrigin.y;
+        return (y + this.worldOrigin.y) / this.scale;
     }
 }

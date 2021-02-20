@@ -1,12 +1,12 @@
 import Node from "../../NodeEditorFramework/Elements/Node.js";
-import { SocketValueType } from "../../NodeEditorFramework/Elements/Socket.js";
+import  ValueType  from "../../NodeEditorFramework/Elements/ValueType.js";
 
 export default class NotNode extends Node{ 
     constructor(x, y) {
         super("Not", x, y);
 
-        this.addInputSocket("in1", SocketValueType.BOOLEAN);
-        this.addOutputSocket("out", SocketValueType.BOOLEAN);
+        this.addInputSocket("in1", ValueType.BOOLEAN);
+        this.addOutputSocket("out", ValueType.BOOLEAN);
     }
 
     update() {

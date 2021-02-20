@@ -1,7 +1,7 @@
 import generateObjectFolder from "./ObjectFolderGenerator.js";
 
 export default class ObjectPickerPanel {
-    constructor(parent, style, nodeDatabase) {
+    constructor(parent, style, nodeDatabase, canvasStateMachine) {
         this.panelWidth = "20%";
         this.hidePercentage = 0.9;
         this.hideTime = 300;
@@ -30,7 +30,7 @@ export default class ObjectPickerPanel {
         this.hideWidth = Math.floor(this.panel.clientWidth * this.hidePercentage);
 
         this.nodeDatabase.getCategories().forEach((category) => {
-            generateObjectFolder(this.contentPane, category, this.nodeDatabase.getAllNodesInCategory(category));
+            generateObjectFolder(this.contentPane, category, this.nodeDatabase.getAllNodesInCategory(category), canvasStateMachine);
         });
     }
 

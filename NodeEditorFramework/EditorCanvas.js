@@ -1,7 +1,7 @@
+import CanvasStateMachine, { CanvasState } from "./CanvasStateMachine.js";
 import Grid from "./Elements/Grid.js";
-import Node from "./Elements/Node.js";
+import Rect from "./Elements/Mathematical/Rect.js";
 import QuadTree from "./Elements/QuadTree.js";
-import Socket, { SocketType, SocketValueType } from "./Elements/Socket.js";
 import MouseZoomer from "./MouseZoomer.js";
 
 export default class EditorCanvas {
@@ -22,8 +22,10 @@ export default class EditorCanvas {
 
         this.canMove = true;
 
-        this.areaSixe = 10000;
-        this.nodeContainer = new QuadTree(-this.areaSixe/2, -this.areaSixe/2, this.areaSixe, this.areaSixe, 3);
+        this.areaSize = 10000;
+        this.nodeContainer = new QuadTree(-this.areaSize/2, -this.areaSzxe/2, this.areaSize, this.areaSize, 3);
+
+        this.stateMachine = new CanvasStateMachine();
 
         this.setupInput();
 
@@ -36,15 +38,38 @@ export default class EditorCanvas {
         this.canvas.addEventListener("mousedown", this.onMouseMove.bind(this));
         this.canvas.addEventListener("mouseup", this.onMouseMove.bind(this));
         this.canvas.addEventListener("mouseout", this.onMouseMove.bind(this));
+        this.canvas.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+        })
     }
 
     onMouseMove (event) {
-        if (this.canMove)
+        if (this.stateMachine.state == CanvasState.DEFAULT)
             this.mouseZoomer.onMouseMove(event);
+        else if (event.type == "mousedown" && this.stateMachine.state == CanvasState.PLACING) {
+            if (event.button == 0) {
+                let newNode = {};
+                Object.defineProperties(newNode, this.stateMachine.placing_node);
+
+                let canvasBound = event.target.getBoundingClientRect();
+                newNode.boundary.position.x = this.mouseZoomer.screenToWorldX(event.clientX - canvasBound.left);
+                newNode.boundary.position.y = this.mouseZoomer.screenToWorldY(event.clientY - canvasBound.top);
+                newNode.calculate();
+                console.log(newNode);
+                this.nodeContainer.addNode(newNode);
+            }
+            else if (event.button == 2) {
+                this.stateMachine.state = CanvasState.DEFAULT;
+            }
+        }
+
+        event.preventDefault();
     }
 
     onMouseScroll (event) {
         this.mouseZoomer.onMouseScroll(event);
+
+        event.preventDefault();
     }
 
     redraw() {
@@ -52,7 +77,8 @@ export default class EditorCanvas {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.grid.draw(this, this.mouseZoomer);
 
-        let allNodes = this.nodeContainer.getNodesInRegion(-this.areaSixe/2, -this.areaSixe/2, this.areaSixe, this.areaSixe);
+        let region = new Rect(this.mouseZoomer.screenToWorldX(-100), this.mouseZoomer.screenToWorldY(-100), this.mouseZoomer.zoomedInv(this.canvas.width + 100), this.mouseZoomer.zoomedInv(this.canvas.height + 100));
+        let allNodes = this.nodeContainer.getNodesInRegion(region);
         for (let i = 0; i < allNodes.length; i++) {
             let node = allNodes[i];
             node.draw(this.context, this.mouseZoomer, 0, 0);  

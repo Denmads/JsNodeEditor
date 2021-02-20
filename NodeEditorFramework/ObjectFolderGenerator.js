@@ -1,9 +1,11 @@
-export default function generateObjectFolder(parentDOM, name, nodes) {
+import { CanvasState } from "./CanvasStateMachine.js";
+
+export default function generateObjectFolder(parentDOM, name, nodes, canvasStateMachine) {
     let container = document.createElement("div");
     container.style.userSelect = "none";
     container.style.border = "1px solid black";
     container.style.width = "90%";
-    let body = generateBody(nodes);
+    let body = generateBody(nodes, canvasStateMachine);
     generateHeader(container, name, body);
 
     parentDOM.appendChild(container);
@@ -46,7 +48,7 @@ function generateHeader(container, name, body) {
     container.appendChild(body);
 }
 
-function generateBody(nodes) {
+function generateBody(nodes, canvasStateMachine) {
     let body = document.createElement("div");
     body.style.minHeight = "20px";
     body.style.backgroundColor = "#515151";
@@ -84,7 +86,16 @@ function generateBody(nodes) {
                 content.style.backgroundColor = "#393939";
             });
 
-            content.innerText = nodes[nodeIndex].name;
+
+            let node = nodes[nodeIndex];
+            content.addEventListener("mousedown", (e) => {
+                if (e.button == 0) {
+                    canvasStateMachine.state = CanvasState.PLACING;
+                    canvasStateMachine.placing_node = node;
+                }
+            });
+
+            content.innerText = node.name;
             row.appendChild(content);
             
             nodeIndex++;
