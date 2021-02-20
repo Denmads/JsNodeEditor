@@ -25,7 +25,7 @@ export default class Node {
     }
 
     addOutputSocket(name, valueType) {
-        this.sockets.inputs[name] = new Socket(SocketType.OUTPUT, valueType);
+        this.sockets.outputs[name] = new Socket(SocketType.OUTPUT, valueType);
     }
 
     getInput(name) {
@@ -43,7 +43,13 @@ export default class Node {
         this.width = 70;
     }
 
+    calculateInternal() {
+        this.internalWidth = this.width - Socket.size * 4;
+        this.internalHeight = this.height - Socket.size * 2;
+    }
+
     update() {
+        //Custom logic goes here
         return
     }
 
@@ -80,5 +86,17 @@ export default class Node {
                 this.sockets.outputs[outputKeys[i]].draw(context, zoomer, this.position.x + this.width/2, ySoc);
             }
         }
+
+
+        this.drawInternal(context, zoomer, this.internalWidth, this.internalHeight);
+    }
+
+    drawInternal(context, zoomer, width, height) {
+        // Can be overwritten for custom drawing
+        context.font = zoomer.zoomed(12) + "px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillStyle = "#000000";
+        context.fillText(this.name, zoomer.worldToScreenX(this.position.x), zoomer.worldToScreenY(this.position.y), zoomer.zoomed(width));
     }
 }
