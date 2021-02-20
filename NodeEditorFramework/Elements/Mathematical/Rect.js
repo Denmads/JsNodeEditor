@@ -19,4 +19,8 @@ export default class Rect {
     contains(x, y) {
         return x >= this.position.x && x <= this.position.x + this.width && y >= this.position.y && y <= this.position.y + this.height;
     }
+
+    clone() {
+        return new Rect(this.position.x, this.position.y, this.width, this.height);
+    }
 }
