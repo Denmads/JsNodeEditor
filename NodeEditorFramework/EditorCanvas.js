@@ -3,6 +3,7 @@ import Grid from "./Elements/Grid.js";
 import Rect from "./Elements/Mathematical/Rect.js";
 import QuadTree from "./Elements/QuadTree.js";
 import MouseZoomer from "./MouseZoomer.js";
+import Node from "./Elements/Node.js";
 
 export default class EditorCanvas {
     constructor(parent, style) {
@@ -25,7 +26,10 @@ export default class EditorCanvas {
         this.areaSize = 10000;
         this.nodeContainer = new QuadTree(-this.areaSize/2, -this.areaSzxe/2, this.areaSize, this.areaSize, 3);
 
-        this.stateMachine = new CanvasStateMachine();
+        this.stateMachine = new CanvasStateMachine(this);
+
+        this.hoveredNode = undefined;
+        this.selectedNode = undefined;
 
         this.setupInput();
 
@@ -34,34 +38,83 @@ export default class EditorCanvas {
 
     setupInput() {
         this.canvas.addEventListener("wheel", this.onMouseScroll.bind(this), {passive: false});
-        this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
-        this.canvas.addEventListener("mousedown", this.onMouseMove.bind(this));
-        this.canvas.addEventListener("mouseup", this.onMouseMove.bind(this));
-        this.canvas.addEventListener("mouseout", this.onMouseMove.bind(this));
+        
         this.canvas.addEventListener("contextmenu", (e) => {
             e.preventDefault();
         })
     }
 
     onMouseMove (event) {
-        if (this.stateMachine.state == CanvasState.DEFAULT)
+        let canvasBound = event.target.getBoundingClientRect();
+        let x = this.mouseZoomer.screenToWorldX(event.clientX - canvasBound.left);
+        let y = this.mouseZoomer.screenToWorldY(event.clientY - canvasBound.top);
+
+        let hoveringNode = undefined;
+        let region = new Rect(x - this.mouseZoomer.zoomedInv(500), y - this.mouseZoomer.zoomedInv(500), this.mouseZoomer.zoomedInv(1000), this.mouseZoomer.zoomedInv(1000));
+        let allNodes = this.nodeContainer.getNodesInRegion(region);
+        for (let node of allNodes) {
+            if (node.boundary.contains(x, y)) {
+                hoveringNode = node;
+            }
+        }
+
+        if (event.type == "mouseup") {
             this.mouseZoomer.onMouseMove(event);
+        }
+
+        if (hoveringNode != undefined) {
+            hoveringNode.onHover();
+        }
+
+        if (hoveringNode != undefined && this.hoveredNode == undefined && hoveringNode != this.selectedNode) {
+            hoveringNode.onHoverStart();
+        }
+        else if (hoveringNode == undefined && this.hoveredNode != undefined && this.hoveredNode != this.selectedNode) {
+            this.hoveredNode.onHoverEnd();
+        }
+        else if (hoveringNode != this.hoveredNode) {
+            this.hoveredNode.onHoverEnd();
+            this.hoveredNode.onHoverStart();
+        }
+        
+
+        if (this.stateMachine.state == CanvasState.DEFAULT && event.type == "mouseup" && event.button == 2) {
+            if (hoveringNode != undefined)
+                hoveringNode.onRightClick();
+        }
+        else if (this.stateMachine.state == CanvasState.DEFAULT && event.type == "mouseup" && event.button == 0) {
+            if (hoveringNode != undefined) {
+                if (this.selectedNode != undefined) {
+                    this.selectedNode.onDeselect();
+                }
+                this.selectedNode = hoveringNode;
+                this.selectedNode.onSelect();
+            }
+            else {
+                this.selectedNode.onDeselect();
+                this.selectedNode = undefined;
+            }
+        }
+        else if (this.stateMachine.state == CanvasState.DEFAULT) {
+            this.mouseZoomer.onMouseMove(event);
+        }
         else if (event.type == "mousedown" && this.stateMachine.state == CanvasState.PLACING) {
             if (event.button == 0) {
-                let newNode = {};
-                Object.defineProperties(newNode, this.stateMachine.placing_node);
-
+                
                 let canvasBound = event.target.getBoundingClientRect();
-                newNode.boundary.position.x = this.mouseZoomer.screenToWorldX(event.clientX - canvasBound.left);
-                newNode.boundary.position.y = this.mouseZoomer.screenToWorldY(event.clientY - canvasBound.top);
+                let x = this.mouseZoomer.screenToWorldX(event.clientX - canvasBound.left);
+                let y = this.mouseZoomer.screenToWorldY(event.clientY - canvasBound.top);
+                let newNode = new this.stateMachine.placing_node(x, y);
                 newNode.calculate();
-                console.log(newNode);
                 this.nodeContainer.addNode(newNode);
             }
-            else if (event.button == 2) {
+            else if (this.stateMachine.state == CanvasState.PLACING && event.button == 2) {
                 this.stateMachine.state = CanvasState.DEFAULT;
             }
         }
+
+        //Update hovered node
+        this.hoveredNode = hoveringNode;
 
         event.preventDefault();
     }
@@ -74,14 +127,14 @@ export default class EditorCanvas {
 
     redraw() {
         var self = this;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.grid.draw(this, this.mouseZoomer);
+        self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+        self.grid.draw(self, self.mouseZoomer);
 
-        let region = new Rect(this.mouseZoomer.screenToWorldX(-100), this.mouseZoomer.screenToWorldY(-100), this.mouseZoomer.zoomedInv(this.canvas.width + 100), this.mouseZoomer.zoomedInv(this.canvas.height + 100));
-        let allNodes = this.nodeContainer.getNodesInRegion(region);
+        let region = new Rect(self.mouseZoomer.screenToWorldX(-200), self.mouseZoomer.screenToWorldY(-200), self.mouseZoomer.zoomedInv(this.canvas.width + 200), self.mouseZoomer.zoomedInv(this.canvas.height + 200));
+        let allNodes = self.nodeContainer.getNodesInRegion(region);
         for (let i = 0; i < allNodes.length; i++) {
             let node = allNodes[i];
-            node.draw(this.context, this.mouseZoomer, 0, 0);  
+            node.draw(self.context, self.mouseZoomer, 0, 0);  
         }
 
         window.requestAnimationFrame(self.redraw.bind(self));

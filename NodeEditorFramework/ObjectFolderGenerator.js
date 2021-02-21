@@ -95,7 +95,7 @@ function generateBody(nodes, canvasStateMachine) {
                 }
             });
 
-            content.innerText = node.name;
+            content.innerText = new node(0,0).name;
             row.appendChild(content);
             
             nodeIndex++;

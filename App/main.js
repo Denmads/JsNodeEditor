@@ -8,11 +8,11 @@ import AddNode from "./nodes/AddNode.js";
 
 let nodeDatabase = new NodeDatabase();
 
-nodeDatabase.addNode("Logic", new AndNode())
-nodeDatabase.addNode("Logic", new OrNode())
-nodeDatabase.addNode("Logic", new NotNode())
-nodeDatabase.addNode("Logic", new XorNode())
-nodeDatabase.addNode("Math", new AddNode())
+nodeDatabase.addNode("Logic", AndNode);
+nodeDatabase.addNode("Logic", OrNode);
+nodeDatabase.addNode("Logic", NotNode);
+nodeDatabase.addNode("Logic", XorNode);
+nodeDatabase.addNode("Math", AddNode);
 
 let nodeEditor = new NodeEditor(nodeDatabase);
 document.body.appendChild(nodeEditor.getDisplay());

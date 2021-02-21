@@ -34,14 +34,19 @@ export default class MouseZoomer {
 
     }
 
-    onMouseMove(event) {
-        if (event.type === "mousedown") {
+    onMouseDown(event) {
+        if (event.type === "mousedown" && event.button == 0) {
             this.mouse.pressed = 1;
         }
-        else if (event.type === "mouseup" || event.type === "mouseout") {
+    }
+
+    onMouseUpOrOut(event) {
+        if ((event.type === "mouseup" && event.button == 0) || event.type == "mouseout") {
             this.mouse.pressed = 0;
         }
+    }
 
+    onMouseMove(event) {
         let bounds = event.target.getBoundingClientRect();
         let newX = event.clientX - bounds.left;
         let newY = event.clientY - bounds.top;
