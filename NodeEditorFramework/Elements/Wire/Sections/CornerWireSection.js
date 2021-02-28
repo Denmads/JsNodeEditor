@@ -24,11 +24,22 @@ export default class CornerWireSection extends WireSection{
         let diffX = x - this.center.x;
         let diffY = y - this.center.y;
         let sqrDist = diffX * diffX + diffY * diffY
+        let minDist = (this.radius - this.zoomedWidth) * (this.radius - this.zoomedWidth);
+        let maxDist = (this.radius + this.zoomedWidth) * (this.radius + this.zoomedWidth);
+        console.log("Min: " + minDist + " | Max: " + maxDist + " | P: " + sqrDist);
 
-        
-        
+        let withinDist = minDist < sqrDist && sqrDist < maxDist;
+        if (!withinDist)
+            return false;
 
-        return false;
+        console.log("dist");
+        let startAngle = Math.atan2(this.centerToStart.y, this.centerToStart.x);
+        let endAngle = Math.atan2(this.centerToEnd.y, this.centerToEnd.x);
+        let pointAngle = Math.atan2(diffY, diffX);
+
+        let withinAngle = Math.min(startAngle, endAngle) < pointAngle && pointAngle < Math.max(startAngle, endAngle);
+
+        return withinAngle;
     }
 
     drawCurve(context, zoomer) {
