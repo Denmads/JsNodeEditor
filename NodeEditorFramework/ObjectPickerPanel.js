@@ -22,7 +22,7 @@ export default class ObjectPickerPanel {
         this.contentPane.style.width = "100%";
         this.contentPane.style.overflowY = "auto";
         this.panel.appendChild(this.contentPane);
-        parent.appendChild(this.panel);
+        parent.insertBefore(this.panel, parent.children[1]);
 
         this.toggle = this.createToggleButton(style);
         this.panel.insertBefore(this.toggle, this.panel.children[0]);

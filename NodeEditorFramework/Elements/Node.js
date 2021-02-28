@@ -6,6 +6,9 @@ export default class Node {
     static SELECTED_BORDER_COLOR = "#e6d64c";
     static HOVER_BORDER_COLOR = "#969369";
 
+    static DEFAULT_BACKGROUND_COLOR = "#666666";
+    static ERROR_BACKGROUND_COLOR = "#aa4444";
+
     constructor(name, x, y) {
         this.boundary = new Rect(x, y);
         this.internalBoundary = new Rect();
@@ -16,16 +19,20 @@ export default class Node {
             size: 10
         }
 
+        this.properties = {}
+
         this.name = name;
 
         this.selected = false;
 
+        this.error = undefined;
+        this.errorStateCallbacks = [];
+
         this.spaceAroundSockets = 5;
-        this.nodeBackgroundColor = "#666666";
-        this.nodeBorderColor = "#000000";
+        this.prevBackColor = Node.DEFAULT_BACKGROUND_COLOR;
+        this.nodeBackgroundColor = Node.DEFAULT_BACKGROUND_COLOR;
+        this.nodeBorderColor = Node.DEFAULT_BORDER_COLOR;
         this.cornerRadius = 5;
-
-
     }
 
     addInputSocket(name, valueType) {
@@ -36,12 +43,42 @@ export default class Node {
         this.sockets.outputs[name] = new Socket(SocketType.OUTPUT, valueType);
     }
 
+    addProperty(name, property) {
+        property.setNode(this);
+        this.properties[name] = property;
+    }
+
+    getProperty(name) {
+        return this.properties[name].value;
+    }
+
     getInput(name) {
         return this.sockets.inputs[name].value
     }
 
     setOutput(name, value) {
         this.sockets.outputs[name].value = value;
+    }
+
+    setError(message) {
+        this.error = message;
+    }
+
+    registerOnErrorStateChangeCallback(id, callback) {
+        this.errorStateCallbacks.push({
+            id: id,
+            callback: callback
+        });
+    }
+    
+    unregisterOnErrorStateChangeCallback(id) {
+        this.errorStateCallbacks = this.errorStateCallbacks.filter((val, index, arr) => {
+            return val.id != id;
+        })
+    }
+
+    resetError() {
+        this.error = undefined;
     }
 
     calculate () {
@@ -66,6 +103,8 @@ export default class Node {
 
     update() {
         //Custom logic goes here
+        
+        //Use setError(message), when an error occurs in the update
     }
 
     onRightClick() {
@@ -96,6 +135,26 @@ export default class Node {
     onDeselect() {
         this.selected = false;
         this.nodeBorderColor = Node.DEFAULT_BORDER_COLOR;
+    }
+
+    onUpdateError() {
+        if (this.nodeBackgroundColor != Node.ERROR_BACKGROUND_COLOR) {
+            this.prevBackColor = this.nodeBackgroundColor;
+
+            for (const callback of this.errorStateCallbacks) {
+                callback.callback();
+            }
+        }
+        this.nodeBackgroundColor = Node.ERROR_BACKGROUND_COLOR;
+    }
+    onNoUpdateError() {
+        if (this.nodeBackgroundColor == Node.ERROR_BACKGROUND_COLOR) {
+            for (const callback of this.errorStateCallbacks) {
+                callback.callback();
+            }
+        }
+
+        this.nodeBackgroundColor = this.prevBackColor;
     }
 
     draw(context, zoomer) {

@@ -16,9 +16,9 @@ export default class NodeEditor {
     }
 
     initialize() {
-        this.editorCanvas = new EditorCanvas(this.rootDiv, this.style);
-        this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style, this.nodeDatabase, this.editorCanvas.stateMachine);
         this.propertiesPanel = new PropertiesPanel(this.rootDiv, this.style);
+        this.editorCanvas = new EditorCanvas(this.rootDiv, this.style, this.propertiesPanel);
+        this.objectPickerPanel = new ObjectPickerPanel(this.rootDiv, this.style, this.nodeDatabase, this.editorCanvas.stateMachine);
 
         this.editorCanvas.redraw();
     }

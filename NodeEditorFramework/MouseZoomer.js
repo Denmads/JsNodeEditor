@@ -35,15 +35,11 @@ export default class MouseZoomer {
     }
 
     onMouseDown(event) {
-        if (event.type === "mousedown" && event.button == 0) {
-            this.mouse.pressed = 1;
-        }
+        this.mouse.pressed = 1;
     }
 
     onMouseUpOrOut(event) {
-        if ((event.type === "mouseup" && event.button == 0) || event.type == "mouseout") {
-            this.mouse.pressed = 0;
-        }
+        this.mouse.pressed = 0;
     }
 
     onMouseMove(event) {
