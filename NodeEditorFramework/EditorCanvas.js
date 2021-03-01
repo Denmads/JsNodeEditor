@@ -4,8 +4,7 @@ import Point from "./Elements/Mathematical/Point.js";
 import Rect from "./Elements/Mathematical/Rect.js";
 import QuadTree from "./Elements/QuadTree.js";
 import ValueType from "./Elements/ValueType.js";
-import CornerWireSection from "./Elements/Wire/Sections/CornerWireSection.js";
-import StraightWireSection from "./Elements/Wire/Sections/StraightWireSection.js";
+import Wire from "./Elements/Wire/Wire.js";
 import MouseZoomer from "./MouseZoomer.js";
 
 export default class EditorCanvas {
@@ -38,7 +37,8 @@ export default class EditorCanvas {
 
 
         //DEBUG
-        this.section = new CornerWireSection(ValueType.STRING, new Point(0, 0), new Point(100, 100), 2, new Point(100, 0));
+        this.wire = new Wire(new Point(0, 0), new Point(600, -300), ValueType.NUMBER);
+        this.wire.calculate();
 
         this.redraw();
     }
@@ -79,11 +79,7 @@ export default class EditorCanvas {
             node.draw(self.context, self.mouseZoomer, 0, 0);  
         }
 
-        self.section.drawHighlight(self.context, self.mouseZoomer, "#e6d64c");
-        self.section.draw(self.context, self.mouseZoomer);
-        if (self.section.containsPoint(self.mouseZoomer.screenToWorldX(self.mouseZoomer.mouse.live.x), self.mouseZoomer.screenToWorldY(self.mouseZoomer.mouse.live.y))) {
-            console.log("inside");
-        }
+        self.wire.draw(self.context, self.mouseZoomer);
 
         window.requestAnimationFrame(self.redraw.bind(self));
     }

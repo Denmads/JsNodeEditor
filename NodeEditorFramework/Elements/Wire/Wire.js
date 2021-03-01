@@ -1,4 +1,5 @@
-import Point from "../Mathematical/Point.js";
+import generateWireSections from "./WireSectionGenerator.js";
+import Node from "../Node.js";
 
 export default class Wire {
     
@@ -10,31 +11,31 @@ export default class Wire {
         this.wireWidth = 2;
         this.cornerRadius = 15;
 
-        this.section = [];
+        this.sections = [];
+        this.highlight = false;
     }
 
     calculate() {
-        let newSections = [];
-
-        let dir = (this.start.y > this.end.y ? -1 : 1);
-
-        if (this.end.x > this.start.x) {
-            let middleX = (this.start.x + this.end.x) / 2;
-
-            newSections.push({type: WireSectionType.STRAIGHT, start: this.start.clone(), end: new Point(this.start.x + (middleX - this.cornerRadius), this.start.y)});
-            newSections.push({type: WireSectionType.CORNER, start: new Point(this.start.x + (middleX - this.cornerRadius), this.start.y), end: new Point(this.start.x + middleX, this.start.y + (dir * this.cornerRadius)), control: });
-        }
-        else {
-
-        }
+        this.sections = generateWireSections(this.start, this.end, this.cornerRadius, {
+            type: this.valueType,
+            width: this.wireWidth
+        });
     }
 
     draw(context, zoomer) {
+        context.beginPath();
+        for (let sec of this.sections) {
+            sec.draw(context, zoomer);
+        }
 
+        if (this.highlight) {
+            context.strokeStyle = Node.SELECTED_BORDER_COLOR;
+            context.lineWidth = zoomer.zoomed(this.wireWidth * 4);
+            context.stroke();
+        }
+
+        context.strokeStyle = this.valueType.color;
+        context.lineWidth = zoomer.zoomed(this.wireWidth * 2);
+        context.stroke();
     }
-}
-
-class WireSectionType {
-    static STRAIGHT = "straight";
-    static CORNER = "corner";
 }
